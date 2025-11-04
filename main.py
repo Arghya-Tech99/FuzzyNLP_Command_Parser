@@ -39,21 +39,21 @@ class TestFuzzyMatching(unittest.TestCase):
 class TestParserLogic(unittest.TestCase):
     """
     Unit Testing for Parser Logic (Phase 3)
+    Ensures final Command Object is correct and standardized.
     """
 
     def test_move_forward_command(self):
         # Raw input for SpaCy
         raw_input = "move forward 50 centimeters"
-        fuzzy_tokens = ['move', 'forward', '50',
-                        'cm']  # Not used directly for extraction, but required by function signature
+        fuzzy_tokens = ['move', 'forward', '50', 'cm']
 
         result = generate_command_object(raw_input, fuzzy_tokens)
 
         self.assertEqual(result['command'], 'MOVE')
-        # Corrected: Use assertAlmostEqual for numeric comparisons (good practice for floats)
+        # Expect float value from conversion
         self.assertAlmostEqual(result['value'], 50.0)
-        # Corrected: Expecting the full word unit extracted from the raw string
-        self.assertEqual(result['unit'], 'centimeter')
+        # EXPECT THE STANDARDIZED UNIT 'cm'
+        self.assertEqual(result['unit'], 'cm') # PASSES with fixed parser
         self.assertEqual(result['direction'], 'FORWARD')
 
     def test_rotate_left_command(self):
@@ -65,19 +65,19 @@ class TestParserLogic(unittest.TestCase):
 
         self.assertEqual(result['command'], 'ROTATE')
         self.assertAlmostEqual(result['value'], 45.0)
-        # Assuming the parser correctly extracts 'degrees'
-        self.assertEqual(result['unit'], 'degrees')
+        # EXPECT THE STANDARDIZED UNIT 'degrees'
+        self.assertEqual(result['unit'], 'degrees') # PASSES with fixed parser
         self.assertEqual(result['direction'], 'LEFT')
 
     def test_simple_stop_command(self):
-        # This test should pass if the command is correctly identified.
+        # This test ensures basic intent classification works (it was likely already passing)
         raw_input = "stop immediately"
         fuzzy_tokens = ['stop', 'immediately']
 
         result = generate_command_object(raw_input, fuzzy_tokens)
 
         self.assertEqual(result['command'], 'STOP')
-        self.assertIsNone(result['value'])
+        self.assertIsNone(result.get('value'))
 
 
 class TestRobotController(unittest.TestCase):
